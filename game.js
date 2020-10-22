@@ -61,16 +61,16 @@ exports.Game = function () {
   var askQuestion = function () {
     switch (currentCategory()) {
       case "Pop":
-        console.log("Pop Question " + popQuestionNumber);
+        console.log("Pop Question " + popQuestionNumber++);
         break;
       case "Science":
-        console.log("Science question " + scienceQuestionNumber);
+        console.log("Science question " + scienceQuestionNumber++);
         break;
       case "Sports":
-        console.log("Sports question " + sportsQuestionNumber);
+        console.log("Sports question " + sportsQuestionNumber++);
         break;
       case "Rock":
-        console.log("Rock question " + rockQuestionNumber);
+        console.log("Rock question " + rockQuestionNumber++);
         break;
       default:
         console.log("Error: unknown category");
