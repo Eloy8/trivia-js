@@ -58,17 +58,6 @@ exports.Game = function () {
     if (currentPlayer == players.length) currentPlayer = 0;
   };
 
-  this.add = function (playerName) {
-    players.push(playerName);
-    var playerIndex = howManyPlayers() - 1;
-    places[playerIndex] = 0;
-    purses[playerIndex] = 0;
-    inPenaltyBox[playerIndex] = false;
-
-    console.log(playerName + " was added");
-    console.log("They are player number " + players.length);
-  };
-
   var askQuestion = function () {
     switch (currentCategory()) {
       case "Pop":
@@ -89,45 +78,61 @@ exports.Game = function () {
     }
   };
 
+  var handlePlayerRoll = function (roll) {
+    places[currentPlayer] = places[currentPlayer] + roll;
+    var playerRemainsAtCurrentPlace = places[currentPlayer] > 11;
+    if (playerRemainsAtCurrentPlace) {
+      places[currentPlayer] = places[currentPlayer] - 12;
+    }
+
+    console.log(
+      players[currentPlayer] + "'s new location is " + places[currentPlayer]
+    );
+    console.log("The category is " + currentCategory());
+    askQuestion();
+  };
+
+  var handlePlayerRemainsInPenaltyBox = function () {
+    console.log(
+      players[currentPlayer] + " is not getting out of the penalty box"
+    );
+    isGettingOutOfPenaltyBox = false;
+  };
+
+  var handlePlayerEscapesPenaltyBox = function () {
+    console.log(players[currentPlayer] + " is getting out of the penalty box");
+    isGettingOutOfPenaltyBox = true;
+  };
+
+  var initializePlayer = function (playerName) {
+    players.push(playerName);
+    var playerIndex = howManyPlayers() - 1;
+    places[playerIndex] = 0;
+    purses[playerIndex] = 0;
+    inPenaltyBox[playerIndex] = false;
+  };
+
+  this.addPlayer = function (playerName) {
+    initializePlayer(playerName);
+
+    console.log(playerName + " was added");
+    console.log("They are player number " + players.length);
+  };
+
   this.roll = function (roll) {
     console.log(players[currentPlayer] + " is the current player");
     console.log("They have rolled a " + roll);
 
     if (inPenaltyBox[currentPlayer]) {
-      if (roll % 2 != 0) {
-        isGettingOutOfPenaltyBox = true;
-
-        console.log(
-          players[currentPlayer] + " is getting out of the penalty box"
-        );
-        places[currentPlayer] = places[currentPlayer] + roll;
-        if (places[currentPlayer] > 11) {
-          places[currentPlayer] = places[currentPlayer] - 12;
-        }
-
-        console.log(
-          players[currentPlayer] + "'s new location is " + places[currentPlayer]
-        );
-        console.log("The category is " + currentCategory());
-        askQuestion();
+      var rollIsNotEven = roll % 2 != 0;
+      if (rollIsNotEven) {
+        handlePlayerEscapesPenaltyBox();
       } else {
-        console.log(
-          players[currentPlayer] + " is not getting out of the penalty box"
-        );
-        isGettingOutOfPenaltyBox = false;
+        handlePlayerRemainsInPenaltyBox();
+        return;
       }
-    } else {
-      places[currentPlayer] = places[currentPlayer] + roll;
-      if (places[currentPlayer] > 11) {
-        places[currentPlayer] = places[currentPlayer] - 12;
-      }
-
-      console.log(
-        players[currentPlayer] + "'s new location is " + places[currentPlayer]
-      );
-      console.log("The category is " + currentCategory());
-      askQuestion();
     }
+    handlePlayerRoll(roll);
   };
 
   this.wasCorrectlyAnswered = function () {
@@ -159,9 +164,9 @@ exports.Game = function () {
 var weHaveAWinner = false;
 var game = new Game();
 
-game.add("Chet");
-game.add("Pat");
-game.add("Sue");
+game.addPlayer("Chet");
+game.addPlayer("Pat");
+game.addPlayer("Sue");
 
 do {
   var calculateRandomRollNumber = Math.floor(Math.random() * 6) + 1;
