@@ -10,7 +10,7 @@ describe("The test environment", function () {
   });
 });
 
-describe("Test Game object methods", function () {
+describe("The Game object method: ", function () {
   let game;
   let firstPlayer = "TestPerson1";
 
@@ -27,7 +27,7 @@ describe("Test Game object methods", function () {
     console.log = originalLogFunc;
   });
 
-  it("Should add a player", function () {
+  it("addPlayer should add a player", function () {
     var playerNumber = 4;
     var testPlayerName = "TestPerson" + playerNumber;
 
@@ -38,7 +38,7 @@ describe("Test Game object methods", function () {
     );
   });
 
-  it("Should handle even roll", function () {
+  it("roll should be able to handle a even roll", function () {
     let evenRoll = 2;
     game.roll(evenRoll);
     expect(console.log).toHaveBeenCalledWith(
@@ -49,7 +49,7 @@ describe("Test Game object methods", function () {
       firstPlayer + "'s new location is " + evenRoll
     );
   });
-  it("Should handle uneven roll", function () {
+  it("roll should be able to handle a uneven roll", function () {
     let unEvenRoll = 1;
     game.roll(unEvenRoll);
     expect(console.log).toHaveBeenCalledWith(
@@ -63,7 +63,7 @@ describe("Test Game object methods", function () {
     );
   });
 
-  it("Should handle a wrong answer", function () {
+  it("wrongAnswer should handle a wrong answer", function () {
     var weHaveAWinner = game.wrongAnswer();
     expect(weHaveAWinner).toBe(false);
     expect(console.log).toHaveBeenCalledWith(
@@ -73,7 +73,7 @@ describe("Test Game object methods", function () {
       firstPlayer + " was sent to the penalty box"
     );
   });
-  it("Should handle a correct answer", function () {
+  it("wasCorrectlyAnswered should handle a correct answer", function () {
     var weHaveAWinner = game.wasCorrectlyAnswered();
     // No players have won because the game has just been initialized,
     expect(weHaveAWinner).toBe(false);
