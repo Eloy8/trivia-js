@@ -16,10 +16,11 @@ exports.Game = function () {
   var isGettingOutOfPenaltyBox = false;
 
   var didPlayerWin = function () {
-    return !(purses[currentPlayer] == 6);
+    var playerHasAFullPurse = purses[currentPlayer] == 6;
+    return playerHasAFullPurse;
   };
 
-  this.howManyPlayers = function () {
+  var howManyPlayers = function () {
     return players.length;
   };
 
@@ -42,11 +43,27 @@ exports.Game = function () {
     }
   };
 
+  var addCoinToPlayerPurse = function () {
+    purses[currentPlayer] += 1;
+    console.log(
+      players[currentPlayer] +
+        " now has " +
+        purses[currentPlayer] +
+        " Gold Coins."
+    );
+  };
+
+  var handleNextPlayerTurn = function () {
+    currentPlayer += 1;
+    if (currentPlayer == players.length) currentPlayer = 0;
+  };
+
   this.add = function (playerName) {
     players.push(playerName);
-    places[this.howManyPlayers() - 1] = 0;
-    purses[this.howManyPlayers() - 1] = 0;
-    inPenaltyBox[this.howManyPlayers() - 1] = false;
+    var playerIndex = howManyPlayers() - 1;
+    places[playerIndex] = 0;
+    purses[playerIndex] = 0;
+    inPenaltyBox[playerIndex] = false;
 
     console.log(playerName + " was added");
     console.log("They are player number " + players.length);
@@ -114,45 +131,19 @@ exports.Game = function () {
   };
 
   this.wasCorrectlyAnswered = function () {
-    if (inPenaltyBox[currentPlayer]) {
-      if (isGettingOutOfPenaltyBox) {
-        console.log("Answer was correct!!!!");
-        purses[currentPlayer] += 1;
-        console.log(
-          players[currentPlayer] +
-            " now has " +
-            purses[currentPlayer] +
-            " Gold Coins."
-        );
-
-        var winner = didPlayerWin();
-        currentPlayer += 1;
-        if (currentPlayer == players.length) currentPlayer = 0;
-
-        return winner;
-      } else {
-        currentPlayer += 1;
-        if (currentPlayer == players.length) currentPlayer = 0;
-        return true;
-      }
-    } else {
-      console.log("Answer was correct!!!!");
-
-      purses[currentPlayer] += 1;
-      console.log(
-        players[currentPlayer] +
-          " now has " +
-          purses[currentPlayer] +
-          " Gold Coins."
-      );
-
-      var winner = didPlayerWin();
-
-      currentPlayer += 1;
-      if (currentPlayer == players.length) currentPlayer = 0;
-
-      return winner;
+    var playerRemainsInPenaltyBox =
+      inPenaltyBox[currentPlayer] && !isGettingOutOfPenaltyBox;
+    if (playerRemainsInPenaltyBox) {
+      handleNextPlayerTurn();
+      return false;
     }
+    console.log("Answer was correct!!!!");
+    addCoinToPlayerPurse();
+    var winner = didPlayerWin();
+
+    handleNextPlayerTurn();
+
+    return winner;
   };
 
   this.wrongAnswer = function () {
@@ -160,13 +151,12 @@ exports.Game = function () {
     console.log(players[currentPlayer] + " was sent to the penalty box");
     inPenaltyBox[currentPlayer] = true;
 
-    currentPlayer += 1;
-    if (currentPlayer == players.length) currentPlayer = 0;
-    return true;
+    handleNextPlayerTurn();
+    return false;
   };
 };
 
-var notAWinner = false;
+var weHaveAWinner = false;
 var game = new Game();
 
 game.add("Chet");
@@ -179,8 +169,8 @@ do {
 
   var calculateRandomWrongChance = Math.floor(Math.random() * 10) == 7;
   if (calculateRandomWrongChance) {
-    notAWinner = game.wrongAnswer();
+    weHaveAWinner = game.wrongAnswer();
   } else {
-    notAWinner = game.wasCorrectlyAnswered();
+    weHaveAWinner = game.wasCorrectlyAnswered();
   }
-} while (notAWinner);
+} while (!weHaveAWinner);
