@@ -75,7 +75,7 @@ describe("The Game object method: ", function () {
   });
   it("wasCorrectlyAnswered should handle a correct answer", function () {
     var weHaveAWinner = game.wasCorrectlyAnswered();
-    // No players have won because the game has just been initialized,
+    // No players have won because the game has just been initialized
     expect(weHaveAWinner).toBe(false);
     expect(console.log).toHaveBeenCalledWith("Answer was correct!!!!");
     expect(console.log).toHaveBeenCalledWith(
